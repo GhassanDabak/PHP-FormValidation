@@ -23,6 +23,7 @@ session_start();
         if(isset($_SESSION['users'])){
         foreach ($_SESSION['users'] as  $value) {
             if ($loggedUser === $value['email'] && $loggedPassword === $value['password']) {
+                $_SESSION['loggedUser'] = $value;
                 header('Location:index.php');
             } else {
                 echo "aya";

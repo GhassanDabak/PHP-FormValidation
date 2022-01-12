@@ -36,17 +36,18 @@ session_start();
                 }
                 if ($flag === false) {
                     $user = array('email' => $email, 'password' => $password, 'username' => $username);
-                    $pushedArray = [];
-                    array_push($pushedArray, $user, ...$_SESSION['users']);
-                    $_SESSION['users'] = $pushedArray;
+                    $_SESSION['users'][] = $user;
+                    // $pushedArray = [];
+                    // array_push($pushedArray, $user, ...$_SESSION['users']);
+                    // $_SESSION['users'] = $pushedArray;
                     header('Location:login.php');
                 }
             } else {
-                $_SESSION['users'] = array();
                 $user = array('email' => $email, 'password' => $password, 'username' => $username);
-                array_push($_SESSION['users'], $user);
+                $_SESSION['users'][] = $user;
+                // array_push($_SESSION['users'], $user);
                 header('Location:login.php');   
-            }
+            }   
         }
         echo "<pre>";
         print_r($_SESSION['users']);
