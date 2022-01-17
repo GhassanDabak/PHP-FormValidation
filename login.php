@@ -17,29 +17,40 @@ session_start();
 
 <body>
     <?php
+    $errMsg = "";
     if (isset($_POST['submit'])) {
         $loggedUser = $_POST['username'];
         $loggedPassword = $_POST['password'];
-        if(isset($_SESSION['users'])){
-        foreach ($_SESSION['users'] as  $value) {
-            if ($loggedUser === $value['email'] && $loggedPassword === $value['password']) {
-                $_SESSION['loggedUser'] = $value;
-                header('Location:index.php');
-            } else {
-                echo "aya";
-            }
+        $server = "localhost";
+        $dbUsername = "root";
+        $dbPassword = "";
+        $dbName = "store";
+        
+
+        $conn = mysqli_connect($server, $dbUsername, $dbPassword, $dbName);
+
+        if (!$conn) {
+            die("Connection failed: " . mysqli_connect_error());
         }
-    }else {
-        echo "<script>alert('please register')</script>";
-    }
+
+        $sql = "SELECT * FROM `users` WHERE (`email`='".$loggedUser."' AND `password` ='".$loggedPassword."')";
+
+        $result = mysqli_query($conn, $sql);
+
+        if (mysqli_num_rows($result)) {
+            $sessionSQL = "SELECT `username` FROM `users` WHERE (`email`='".$loggedUser."' AND `password` ='".$loggedPassword."')";
+            $sessionResult = mysqli_query($conn,$sessionSQL);
+            $retrievedResult = mysqli_fetch_assoc($sessionResult);
+            $_SESSION['loggedUser'] = $retrievedResult['username'];
+            print_r($sessionResult);
+            header('Location: index.php');
+        } else {
+            $errMsg = "Wrong Credentials";
+        }
+
+        mysqli_close($conn);
     }
     ?>
-
-    <!-- <?php
-    function to_Registration(){
-        header('Location:register.php');
-    }
-    ?> -->
 
     <div class="wrapper fadeInDown">
         <div id="formContent">
@@ -54,6 +65,7 @@ session_start();
             <form method="post">
                 <input type="text" id="login" class="fadeIn second" name="username" placeholder="email">
                 <input type="text" id="password" class="fadeIn third" name="password" placeholder="password">
+                <span><?php echo $errMsg ?></span>
                 <input type="submit" class="fadeIn fourth" value="Log In" name="submit">
                 <!-- <input type="button" class="fadeIn fourth" value="Register" name="click" onclick=""> -->
             </form>

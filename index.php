@@ -1,6 +1,7 @@
 <?php
 session_start();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,7 +28,11 @@ session_start();
         <div class="container">
             <div class="row">
                 <div class="col-xl-9 mx-auto">
-                    <h1> Welcome <span class="text-warning"><?php if($_SESSION['loggedUser']!=""){ print_r(ucfirst($_SESSION['loggedUser']['username']));}else{ echo "There";}?></span></h1>
+                    <h1> Hello <span class="text-warning"><?php if ($_SESSION['loggedUser'] != "") {
+                                                                echo ucfirst($_SESSION['loggedUser']);
+                                                            } else {
+                                                                echo "There";
+                                                            } ?></span></h1>
                     <h1 class="mb-5">Build a landing page for your business or project and generate more leads!</h1>
                 </div>
                 <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
@@ -37,7 +42,8 @@ session_start();
                             <div class="col-12 justify-content-center d-flex ">
                                 <a class="btn btn-block btn-lg btn-primary m-2" href='register.php'>Register</a>
                                 <a class="btn btn-block btn-lg btn-primary m-2" href='login.php'>Login</a>
-                                <a class="btn btn-block btn-lg btn-primary m-2" href='index.php' name="logout" onclick="<?php destroy() ?>">Logout</a>
+                                <?php if ($_SESSION['loggedUser'] != "") { ?>
+                                     <a class='btn btn-block btn-lg btn-primary m-2' href='index.php' name='logout' onclick='<?php destroy() ?>'>Logout</a> <?php }; ?>
                             </div>
 
                         </div>

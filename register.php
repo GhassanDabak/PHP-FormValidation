@@ -20,6 +20,10 @@ session_start();
     <?php
 
     if (isset($_POST['register'])) {
+        $server = "localhost";
+        $dbUsername = "root";
+        $dbPassword = "";
+        $dbName = "store";
         $email = $_POST['email'];
         $username = $_POST['username'];
         $password = $_POST['password'];
@@ -27,31 +31,31 @@ session_start();
         $regex = "/^[^ ]+@[^ ]+\.[a-z]{2,3}$/";
         $flag = false;
         if (preg_match($regex, $email) && strlen($password) >= 8 && $repassword === $password) {
-            if (isset($_SESSION['users'])) {
-                foreach ($_SESSION['users'] as $value) {
-                    if ($value['email'] === $email) {
-                        echo "<script>alert('email already exists')</script>";
-                        $flag = true;
-                    }
-                }
-                if ($flag === false) {
-                    $user = array('email' => $email, 'password' => $password, 'username' => $username);
-                    $_SESSION['users'][] = $user;
-                    // $pushedArray = [];
-                    // array_push($pushedArray, $user, ...$_SESSION['users']);
-                    // $_SESSION['users'] = $pushedArray;
-                    header('Location:login.php');
-                }
-            } else {
-                $user = array('email' => $email, 'password' => $password, 'username' => $username);
-                $_SESSION['users'][] = $user;
-                // array_push($_SESSION['users'], $user);
-                header('Location:login.php');   
-            }   
+            $conn = mysqli_connect($server,$dbUsername,$dbPassword,$dbName);
+            if(!$conn){
+                die("Connection failed: " . mysqli_connect_error());
+            }
+
+            $sql = "SELECT * FROM `users` WHERE `email`='".$email."'";
+            $result = mysqli_query($conn,$sql);
+
+            if(mysqli_num_rows($result)){
+                exit("This email already exists");
+            }
+
+            $sqlInsert = "INSERT INTO `users` (`email`,`username`,`password`) VALUES ('$email','$username','$password')";
+
+            $resultInsert = mysqli_query($conn,$sqlInsert);
+
+            if($result){
+                echo "<h1> record added successfully </h1>";
+                header('Location: login.php');
+            }else{
+                echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+            }
+
+            mysqli_close($conn);
         }
-        echo "<pre>";
-        print_r($_SESSION['users']);
-        echo "</pre>";
     }
     ?>
 
